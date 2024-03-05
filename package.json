@@ -3,22 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 9080",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 9080",
+    "deploy:start": "pm2 startOrRestart ecosystem.config.js",
     "lint": "next lint"
   },
   "dependencies": {
+    "activedirectory2": "^2.2.0",
+    "dotenv": "^16.4.1",
+    "dtrace-provider": "^0.8.8",
+    "jsonwebtoken": "^9.0.2",
+    "ldap-authentication": "^3.0.3",
+    "mssql": "^10.0.2",
+    "net": "^1.0.2",
+    "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.1.0"
+    "tls": "^0.0.1"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.1.0"
+    "eslint-config-next": "14.1.0",
+    "typescript": "^5"
   }
 }

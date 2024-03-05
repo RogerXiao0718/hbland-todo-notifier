@@ -1,0 +1,53 @@
+.schedule-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100px;
+    height: 100px;
+    width: 100%;
+    font-size: 14px;
+    margin: 6px 0px;
+}
+
+.schedule-rule-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 140px;
+    margin-right: 10px;
+}
+
+.schedule-msg-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 4px 6px;
+    box-sizing: border-box;
+    width: 260px;
+    height: 80%;
+    border-radius: 12px;
+    border: 2px solid #2c3e50;
+    font-size: 12px;
+    background-color: #eee;
+    margin-right: 16px;
+}
+
+.schedule-rule-edit-section {
+
+}
+
+.schedule-rule-delete-btn {
+    background-color: red;
+    color: white;
+    width: 60px;
+    height: 32px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    
+
+}
