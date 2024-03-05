@@ -12,7 +12,7 @@ export default function Login() {
     const verified = useCheckLogout()
     const [errorMessage, setErrorMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const { setAuth } = useContext(AuthContext)
+    const { setAuth, setIsManager } = useContext(AuthContext)
 
     const onSubmitSubmit = async (event) => {
         event.preventDefault()
@@ -31,10 +31,11 @@ export default function Login() {
         })
         try {
             setIsLoading(false)
-            const { auth_result } = await response.json()
+            const { auth_result, isManager } = await response.json()
 
             if (auth_result) {
                 setAuth(username)
+                setIsManager(isManager)
                 setErrorMessage('')
                 router.push('/')
             } else {

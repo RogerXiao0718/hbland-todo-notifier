@@ -39,6 +39,14 @@
   margin: 10px 20px;
 }
 
+.dispatch-checkbox {
+  margin-right: 8px;
+}
+
+.display-checkbox-label {
+  margin-right: 8px;
+}
+
 .rule-selector-radio {
   margin-right: 8px;
 }

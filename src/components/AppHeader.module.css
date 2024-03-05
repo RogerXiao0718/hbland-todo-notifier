@@ -18,6 +18,11 @@
     left: 40px;
 }
 
+.app-header-title a {
+    color: #ecf0f1;
+    text-decoration: none;
+}
+
 .header-btn-container {
     display: flex;
     flex-direction: row;
@@ -36,6 +41,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.manager-header {
+    width: 420px;
 }
 
 .header-btn {

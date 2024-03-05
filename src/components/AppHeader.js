@@ -7,8 +7,8 @@ import { PostTimestampContext } from '@/context/PostTimestampProvider'
 import { debuglog } from 'util'
 
 export default function AppHeader() {
-    const { auth, setAuth } = useContext(AuthContext)
-    const {setPostTimestamp} = useContext(PostTimestampContext)
+    const { auth, setAuth, isManager, setIsManager } = useContext(AuthContext)
+    const { setPostTimestamp } = useContext(PostTimestampContext)
     const [isAuthChecked, setIsAuthChecked] = useState(false)
     const router = useRouter()
 
@@ -17,14 +17,19 @@ export default function AppHeader() {
             .then(res => {
                 return res.json()
             })
-            .then(({ valid, username }) => {
+            .then(({ valid, username, isManager }) => {
                 setIsAuthChecked(true)
 
                 if (valid) {
                     setAuth(username)
+                    setIsManager(isManager)
                 }
             })
     }, [])
+
+    const onManagerPageClicked = (event) => {
+        router.push()
+    }
 
     const onExportClicked = (event) => {
         fetch('api/scheduleList', {
@@ -45,7 +50,7 @@ export default function AppHeader() {
                 console.log(userScheduleList)
                 const fileName = 'ExportSchedule.json'
                 const json = JSON.stringify(userScheduleList, null, 2)
-                const blob = new Blob([json], {type: 'application/json'})
+                const blob = new Blob([json], { type: 'application/json' })
                 const href = URL.createObjectURL(blob)
 
                 const link = document.createElement('a')
@@ -56,7 +61,7 @@ export default function AppHeader() {
 
                 document.body.removeChild(link)
                 URL.revokeObjectURL(href)
-        })
+            })
     }
 
     const onReaderLoad = (event) => {
@@ -93,7 +98,7 @@ export default function AppHeader() {
         //     userid: auth,
         //     form_data
         // })
-        
+
     }
 
     const onLoginClicked = (event) => {
@@ -108,22 +113,24 @@ export default function AppHeader() {
             })
     }
 
-
     return (
         <div className={`${styles['app-header']}`}>
-            <h1 className={`${styles['app-header-title']}`}>待辦事項主動通知系統</h1>
-            <div className={`${styles['app-header-auth-sec']}`}>
+            <h1 className={`${styles['app-header-title']}`}><a href='/'>待辦事項主動通知系統</a></h1>
+            <div className={`${styles['app-header-auth-sec']} ${isManager ? styles['manager-header'] : ''}`}>
                 {
                     isAuthChecked && (
                         auth ?
                             <>
-
+                                {isManager &&
+                                    <a href='/managerManagement'><button className={`${styles['header-btn']}`} onClick={onManagerPageClicked}>
+                                            主管查詢
+                                        </button></a>}
                                 <button className={`${styles['header-btn']}`} onClick={onExportClicked}>
                                     匯出排程
                                 </button>
 
                                 <div className={`${styles['header-btn']}`}>
-                                    <input id='import-schedule' className={`${styles['invisible']}`} type='file' styles='height:50px' onChange={onImportChange}  accept='application/JSON' />   
+                                    <input id='import-schedule' className={`${styles['invisible']}`} type='file' styles='height:50px' onChange={onImportChange} accept='application/JSON' />
                                     <label for='import-schedule' className={`${styles['abs-center']}`}>匯入排程</label>
                                 </div>
                                 <button className={`${styles['header-btn']}`} onClick={onSignoutClicked}>登出</button>

@@ -50,7 +50,7 @@ const main = async () => {
                         enddate.setTime(enddate.getTime() + (2 * 24 * 60 * 60 * 1000))
 
                         await inJungliConnection.query`insert into dbo.Message (sender, receiver, xname, xcontent, sendtype, sendIP, recIP, xtime, intertime, timetype, sendtime, done, createdate, createunit, creator, modifydate, modunit, modifier, xkey, presn, sendCname, pctype, enddate) values (${sender}, ${user_id}, ${message_xname}, ${msg_content}, ${sendtype}, ${sendIP}, ${user_ip}, ${xtime}, ${intertime}, ${timetype}, ${onetime_datetime}, ${message_done}, ${currentDateTime}, ${createunit}, ${creator}, ${currentDateTime}, ${createunit}, ${creator}, ${xkey}, ${presn}, ${sendCname}, ${pctype}, ${enddate})`
-                        await inJungliConnection.query`update dbo.MessageSchedule set done=1, last_timestamp=${translateToDBDateTime(new Date())} where sn=${sn}`
+                        await inJungliConnection.query`update dbo.MessageSchedule set done='1', last_timestamp=${translateToDBDateTime(new Date())} where sn=${sn}`
                         console.log(user_id, 'Push Message to dbo.Message Success!!!')
                     } catch (err) {
                         console.log(err)

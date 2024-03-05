@@ -11,12 +11,10 @@ import ScheduleListComponent from '@/components/ScheduleListComponent'
 
 export default function Home() {
     const verified = useCheckLogin()
-    const { auth } = useContext(AuthContext)
-    const {postTimestamp, setPostTimestamp} = useContext(PostTimestampContext)
-    const [currentRule, setCurrentRule] = useState('one-time')
-    const [scheduleList, setScheduleList] = useState([
-
-    ])
+    const { auth, isManager } = useContext(AuthContext)
+    const { postTimestamp, setPostTimestamp } = useContext(PostTimestampContext)
+    const [currentRule, setCurrentRule] = useState('everyday')
+    const [scheduleList, setScheduleList] = useState([])
 
     useEffect(() => {
         fetch('/api/scheduleList', {
@@ -26,13 +24,30 @@ export default function Home() {
             }
         }).then((res) => {
             return res.json()
-        }).then(({userScheduleList}) => {
+        }).then(({ userScheduleList }) => {
             // console.log(userScheduleList)
             setScheduleList(userScheduleList)
         }).catch((err) => {
             console.log('API CALL: /api/ScheduleList, something going wrong')
         })
     }, [postTimestamp])
+
+    useEffect(() => {
+        fetch('/api/departmentMember', {
+            method: 'GET',
+            headers: {
+                "Content-Type": 'application/json'
+            }
+        }).then((res) => {
+            return res.json()
+        }).then(({departmentMember}) => {
+            setDepartmentMembers(departmentMember)
+            setDispatchSelectedMember(departmentMember[0])
+            console.log('dispatchSelectedMember Default', departmentMember[0])
+        }).catch((err) => {
+            console.log('API CALL: /api/departmentMember, something going wrong')
+        })
+    }, [isManager])
 
     // 設定不得小於該日期
     const getMinDate = () => {
@@ -77,6 +92,9 @@ export default function Home() {
     const [everyyearTime, setEveryyearTime] = useState()
     const [textAreaContent, setTextAreaContent] = useState('')
     const [submitErrorMessage, setSubmitErrorMessage] = useState('')
+    const [isDispatchChecked, setIsDispatchChecked] = useState(false)
+    const [dispatchSelectedMember, setDispatchSelectedMember] = useState('')
+    const [departmentMembers, setDepartmentMembers] = useState([])
     let weekOptions = [...Array(7).keys()]
     let weekDisplayOptions = ['日', '一', '二', '三', '四', '五', '六']
     let monthOptions = [...Array(12).keys()]
@@ -88,6 +106,16 @@ export default function Home() {
     const onRuleChange = (event) => {
         setCurrentRule(event.target.value)
         console.log(`RULE change: ${event.target.value}`)
+    }
+
+    const onDispatchCheckboxChanged = (event) => {
+        setIsDispatchChecked(event.currentTarget.checked)
+        console.log("dispatch: ", event.currentTarget.checked)
+    }
+
+    const onDispatchMemberSelectorChanged = (event) => {
+        setDispatchSelectedMember(event.target.value)
+        console.log('dispatch selected member changed', event.target.value)
     }
 
     const onOneTimeDateChange = (event) => {
@@ -203,7 +231,7 @@ export default function Home() {
             } else if ((!isDateValid(new Date(`2024-${everyyearMonth}-${everyyearDate}`)) || !(everyyearMonth == userInputDate.getMonth() + 1) || !(everyyearDate == userInputDate.getDate()))) {
                 setSubmitErrorMessage('輸入日期或時間無效')
                 return false
-            } 
+            }
             else {
                 setSubmitErrorMessage('')
                 return true
@@ -227,6 +255,12 @@ export default function Home() {
                 msg_content: textAreaContent,
                 create_at: translateToDBDateTime(new Date())
             }
+
+            if (isManager && isDispatchChecked) {
+                req_json.user_id = dispatchSelectedMember
+                console.log('委派任務給', req_json.user_id)
+            }
+
             if (currentRule === 'one-time') {
                 req_json = {
                     ...req_json,
@@ -262,9 +296,12 @@ export default function Home() {
                 headers: {
                     "Content-Type": 'application/json'
                 },
-                body: JSON.stringify({...req_json})
+                body: JSON.stringify({ ...req_json })
             }).then(() => {
                 setPostTimestamp(translateToDBDateTime(new Date()))
+                if (isManager && isDispatchChecked) {
+                    alert('通知排程委派成功')
+                }
             })
         }
 
@@ -278,12 +315,21 @@ export default function Home() {
                     <div className={`${styles['create-section-container']}`}>
                         <span className={`${styles['rule-selector-form-header']}`}>{`新增`}</span>
                         <form className={`${styles['rule-selector-form']}`}>
-                            <div className={`${styles['rule-selector-container']}`}>
-                                <input type='radio' id='one-time-rule' className={`${styles['rule-selector-radio']}`} name='rule' checked={currentRule === 'one-time'} onChange={onRuleChange} value='one-time' />
-                                <label for='one-time-rule'>一次性通知: </label>
-                                <input type='date' className={`${styles['rule-selector-datetime-input']}`} onChange={onOneTimeDateChange} min={getMinDate()} max={getMaxDate()} disabled={currentRule !== 'one-time' ? 'disabled' : ''} />
-                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} onChange={onOneTimeTimeChange} disabled={currentRule !== 'one-time'} />
-                            </div>
+                            {
+                                isManager &&
+                                <div className={`${styles['rule-selector-container']}`}>
+                                    <input id='dispatch-checkbox' className={`${styles['dispatch-checkbox']}`} type="checkbox" onChange={onDispatchCheckboxChanged} value={isDispatchChecked}></input>
+                                    <label for='dispatch-checkbox' className={`${styles['display-checkbox-label']}`}>是否委派待辦事項</label>
+                                    <label for="dispatch-member-selector">委派人員</label>
+                                    <select id='dispatch-member-selector' disabled={isDispatchChecked ? '' : 'disabled'} onChange={onDispatchMemberSelectorChanged}>
+                                        {
+                                            departmentMembers.map(departmentMember => {
+                                                return <option key={departmentMember} value={departmentMember}>{departmentMember}</option>
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                            }
                             <div className={`${styles['rule-selector-container']}`}>
                                 <input type='radio' id='everyday-rule' name='rule' checked={currentRule === 'everyday'} onChange={onRuleChange} value='everyday' />
                                 <label for='everyday-rule'>每日通知: </label>
@@ -332,6 +378,12 @@ export default function Home() {
                                 </select>
                                 <label className={`${styles['rule-label']}`}>日</label>
                                 <input type='time' className={`${styles['rule-selector-select']}`} onChange={onEveryyearTimeChange} disabled={currentRule !== 'everyyear' ? 'disabled' : ''} />
+                            </div>
+                            <div className={`${styles['rule-selector-container']}`}>
+                                <input type='radio' id='one-time-rule' className={`${styles['rule-selector-radio']}`} name='rule' checked={currentRule === 'one-time'} onChange={onRuleChange} value='one-time' />
+                                <label for='one-time-rule'>一次性通知: </label>
+                                <input type='date' className={`${styles['rule-selector-datetime-input']}`} onChange={onOneTimeDateChange} min={getMinDate()} max={getMaxDate()} disabled={currentRule !== 'one-time' ? 'disabled' : ''} />
+                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} onChange={onOneTimeTimeChange} disabled={currentRule !== 'one-time'} />
                             </div>
                             <label className={`${styles['create-textarea-label']}`}>通知內容: </label>
                             <textarea className={`${styles['create-schedule-textarea']}`} rows='5' cols='60' onChange={onScheduleTextAreaChange} onKeyDown={onScheduleTextAreaKeyDown}>
