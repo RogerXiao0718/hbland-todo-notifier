@@ -19,3 +19,18 @@ export async function GET(request) {
         return NextResponse.json({error}, {status: 400})
     }
 }
+
+export async function POST(request) {
+    try {
+        const {user_id} = await request.json()
+        const inJungliConnection = await DBGet('inJungli', inJungliSQLConfig)
+        let query_result = await inJungliConnection.query`select * from dbo.MessageSchedule where user_id=${user_id} and done is null order by create_at desc`
+        let userScheduleList = query_result['recordset']
+        console.log(`GET ${user_id}`)
+        console.log(userScheduleList)
+        return NextResponse.json({userScheduleList}, {status: 200})
+    } catch (error) {
+        console.log(error)
+        return NextResponse.json({error}, {status: 400})
+    }
+}

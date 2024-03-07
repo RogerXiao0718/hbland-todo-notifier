@@ -40,9 +40,9 @@ export default function Home() {
             }
         }).then((res) => {
             return res.json()
-        }).then(({departmentMember}) => {
+        }).then(({ departmentMember }) => {
             setDepartmentMembers(departmentMember)
-            setDispatchSelectedMember(departmentMember[0])
+            setDispatchSelectedMember(departmentMember[0].user_id)
             console.log('dispatchSelectedMember Default', departmentMember[0])
         }).catch((err) => {
             console.log('API CALL: /api/departmentMember, something going wrong')
@@ -303,6 +303,18 @@ export default function Home() {
                     alert('通知排程委派成功')
                 }
             })
+
+            if (isManager && isDispatchChecked) {
+                fetch('/api/sendDispatchMessage', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": 'application/json'
+                    },
+                    body: JSON.stringify({ dispatch_user: dispatchSelectedMember })
+                }).then((res) => {
+                    console.log('sendDispatchMessage API Call Success!')
+                })
+            }
         }
 
 
@@ -323,8 +335,8 @@ export default function Home() {
                                     <label for="dispatch-member-selector">委派人員</label>
                                     <select id='dispatch-member-selector' disabled={isDispatchChecked ? '' : 'disabled'} onChange={onDispatchMemberSelectorChanged}>
                                         {
-                                            departmentMembers.map(departmentMember => {
-                                                return <option key={departmentMember} value={departmentMember}>{departmentMember}</option>
+                                            departmentMembers && departmentMembers.map(({ user_id, username }) => {
+                                                return <option key={user_id} value={user_id}>{username}</option>
                                             })
                                         }
                                     </select>

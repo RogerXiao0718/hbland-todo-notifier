@@ -15,7 +15,7 @@ const main = async () => {
     let currentDateStr = convertDateTimeToString(currentDateTime)
     const sender = 'HBADMIN'
     const sendIP = '220.1.35.78'
-    const message_xname = '代辦事項通知'
+    const message_xname = '待辦事項通知'
     const sendtype = 1
     const xtime = 1
     const intertime = 15
@@ -24,8 +24,10 @@ const main = async () => {
     const createunit = 5
     const creator = 'HBADMIN'
     const presn = 0
-    const sendCname = '代辦事項主動通知系統'
+    const sendCname = '待辦事項主動通知系統'
     const pctype = 'WinServer'
+    let enddate = translateToDBDateTime(new Date())
+    enddate.setTime(enddate.getTime() + (2 * 24 * 60 * 60 * 1000))
     const tdocConnection = await DBGet('tdoc', tdocSQLConfig)
     const inJungliConnection = await DBGet('inJungli', inJungliSQLConfig)
     let messageScheduleDBQuery = await inJungliConnection.query`select * from dbo.MessageSchedule where done is null`
@@ -34,7 +36,7 @@ const main = async () => {
         const schedule = messageScheduleDBQuery[i]
         const { sn, user_id, msg_content, schedule_rule } = schedule
         const xkey = Math.random() * 30000
-        let enddate = translateToDBDateTime(new Date())
+
         // 將schedule內容插入到dbo.Message內
         //取得user ip sql:  "select AP_PCIP from tdoc.AP_USER where DocUserID='" & Session("loginuser") & "' and ap_off_job='N' "
         let tdocDBQuery = await tdocConnection.query`select AP_PCIP from tdoc.AP_USER where DocUserID=${user_id} and ap_off_job=${'N'}`
@@ -44,10 +46,10 @@ const main = async () => {
             if (schedule_rule === 'one-time') {
                 const { onetime_datetime } = schedule
                 const onetime_datetime_str = convertDateTimeToString(onetime_datetime)
- 
+
                 if (onetime_datetime_str === currentDateStr) {
                     try {
-                        enddate.setTime(enddate.getTime() + (2 * 24 * 60 * 60 * 1000))
+
 
                         await inJungliConnection.query`insert into dbo.Message (sender, receiver, xname, xcontent, sendtype, sendIP, recIP, xtime, intertime, timetype, sendtime, done, createdate, createunit, creator, modifydate, modunit, modifier, xkey, presn, sendCname, pctype, enddate) values (${sender}, ${user_id}, ${message_xname}, ${msg_content}, ${sendtype}, ${sendIP}, ${user_ip}, ${xtime}, ${intertime}, ${timetype}, ${onetime_datetime}, ${message_done}, ${currentDateTime}, ${createunit}, ${creator}, ${currentDateTime}, ${createunit}, ${creator}, ${xkey}, ${presn}, ${sendCname}, ${pctype}, ${enddate})`
                         await inJungliConnection.query`update dbo.MessageSchedule set done='1', last_timestamp=${translateToDBDateTime(new Date())} where sn=${sn}`
@@ -106,7 +108,7 @@ const main = async () => {
                 }
             } else if (schedule_rule === 'everyyear') {
                 try {
-                    const {everyyear_month, everyyear_date, everyyear_time} = schedule
+                    const { everyyear_month, everyyear_date, everyyear_time } = schedule
                     const everyyear_currentDateTime = new Date()
                     const currentMonth = everyyear_currentDateTime.getMonth() + 1
                     const currentDate = everyyear_currentDateTime.getDate()

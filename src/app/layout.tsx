@@ -8,8 +8,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "代辦事項主動通知系統",
-  description: "中壢地政事務所內網代辦事項主動通知系統",
+  title: "待辦事項主動通知系統",
+  description: "中壢地政事務所內網待辦事項主動通知系統",
 };
 
 export default function RootLayout({
