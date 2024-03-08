@@ -79,17 +79,18 @@ export default function Home() {
         let currentDay = new Date().getDay()
         return currentDay
     }
+    const defaultTimeString = '08:00'
 
     const [oneTimeDate, setOneTimeDate] = useState()
-    const [oneTimeTime, setOneTimeTime] = useState()
-    const [everydayTime, setEverydayTime] = useState()
+    const [oneTimeTime, setOneTimeTime] = useState(defaultTimeString)
+    const [everydayTime, setEverydayTime] = useState(defaultTimeString)
     const [everyweekDay, setEveryweekDay] = useState(getCurrentDay())
-    const [everyweekTime, setEveryweekTime] = useState()
+    const [everyweekTime, setEveryweekTime] = useState(defaultTimeString)
     const [everymonthDate, setEverymonthDate] = useState(getCurrentDate())
-    const [everymonthTime, setEverymonthTime] = useState()
+    const [everymonthTime, setEverymonthTime] = useState(defaultTimeString)
     const [everyyearMonth, setEveryyearMonth] = useState(getCurrentMonth())
     const [everyyearDate, setEveryyearDate] = useState(getCurrentDate())
-    const [everyyearTime, setEveryyearTime] = useState()
+    const [everyyearTime, setEveryyearTime] = useState(defaultTimeString)
     const [textAreaContent, setTextAreaContent] = useState('')
     const [submitErrorMessage, setSubmitErrorMessage] = useState('')
     const [isDispatchChecked, setIsDispatchChecked] = useState(false)
@@ -345,7 +346,7 @@ export default function Home() {
                             <div className={`${styles['rule-selector-container']}`}>
                                 <input type='radio' id='everyday-rule' name='rule' checked={currentRule === 'everyday'} onChange={onRuleChange} value='everyday' />
                                 <label for='everyday-rule'>每日通知: </label>
-                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} onChange={onEverydayTimeChange} disabled={currentRule !== 'everyday' ? 'disabled' : ''} />
+                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} value={everydayTime} onChange={onEverydayTimeChange} disabled={currentRule !== 'everyday' ? 'disabled' : ''} />
                             </div>
                             <div className={`${styles['rule-selector-container']}`}>
                                 <input type='radio' id='everyweek-rule' name='rule' checked={currentRule === 'everyweek'} onChange={onRuleChange} value='everyweek' />
@@ -356,7 +357,7 @@ export default function Home() {
                                         return <option key={i} value={i}>{weekDisplayOptions[i]}</option>
                                     })}
                                 </select>
-                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} onChange={onEveryweekTimeChange} disabled={currentRule !== 'everyweek' ? 'disabled' : ''} />
+                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} value={everyweekTime} onChange={onEveryweekTimeChange} disabled={currentRule !== 'everyweek' ? 'disabled' : ''} />
                             </div>
                             <div className={`${styles['rule-selector-container']}`}>
                                 <input type='radio' id='everymonth-rule' name='rule' checked={currentRule === 'everymonth'} onChange={onRuleChange} value='everymonth' />
@@ -368,7 +369,7 @@ export default function Home() {
                                     })}
                                 </select>
                                 <label className={`${styles['rule-label']}`}>日</label>
-                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} onChange={onEverymonthTimeChange} disabled={currentRule !== 'everymonth' ? 'disabled' : ''} />
+                                <input type='time' className={`${styles['rule-selector-datetime-input']}`}  value={everymonthTime} onChange={onEverymonthTimeChange} disabled={currentRule !== 'everymonth' ? 'disabled' : ''} />
                             </div>
                             <div className={`${styles['rule-selector-container']}`}>
                                 <input type='radio' id='everyyear-rule' name='rule' checked={currentRule === 'everyyear'} onChange={onRuleChange} value='everyyear' />
@@ -389,13 +390,13 @@ export default function Home() {
                                     }
                                 </select>
                                 <label className={`${styles['rule-label']}`}>日</label>
-                                <input type='time' className={`${styles['rule-selector-select']}`} onChange={onEveryyearTimeChange} disabled={currentRule !== 'everyyear' ? 'disabled' : ''} />
+                                <input type='time' className={`${styles['rule-selector-select']}`} value={everyyearTime} onChange={onEveryyearTimeChange} disabled={currentRule !== 'everyyear' ? 'disabled' : ''} />
                             </div>
                             <div className={`${styles['rule-selector-container']}`}>
                                 <input type='radio' id='one-time-rule' className={`${styles['rule-selector-radio']}`} name='rule' checked={currentRule === 'one-time'} onChange={onRuleChange} value='one-time' />
                                 <label for='one-time-rule'>一次性通知: </label>
                                 <input type='date' className={`${styles['rule-selector-datetime-input']}`} onChange={onOneTimeDateChange} min={getMinDate()} max={getMaxDate()} disabled={currentRule !== 'one-time' ? 'disabled' : ''} />
-                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} onChange={onOneTimeTimeChange} disabled={currentRule !== 'one-time'} />
+                                <input type='time' className={`${styles['rule-selector-datetime-input']}`} value={oneTimeTime} onChange={onOneTimeTimeChange} disabled={currentRule !== 'one-time'} />
                             </div>
                             <label className={`${styles['create-textarea-label']}`}>通知內容: </label>
                             <textarea className={`${styles['create-schedule-textarea']}`} rows='5' cols='60' onChange={onScheduleTextAreaChange} onKeyDown={onScheduleTextAreaKeyDown}>
