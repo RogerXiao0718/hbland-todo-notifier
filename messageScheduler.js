@@ -38,7 +38,7 @@ const main = async () => {
     const inJungliConnection = await DBGet('inJungli', inJungliSQLConfig)
     // let messageScheduleDBQuery = await inJungliConnection.query`select * from dbo.MessageSchedule where done is null`
     //測試
-    let messageScheduleDBQuery = await inJungliConnection.query`select * from dbo.MessageSchedule where done is null and user_id`
+    let messageScheduleDBQuery = await inJungliConnection.query`select * from dbo.MessageSchedule where done is null`
     messageScheduleDBQuery = messageScheduleDBQuery.recordset
     for (let i = 0; i < messageScheduleDBQuery.length; i++) {
         const schedule = messageScheduleDBQuery[i]
@@ -71,6 +71,7 @@ const main = async () => {
                         // -----manager callback
                         console.log(user_id, 'Push Message to dbo.Message Success!!!')
                     } catch (err) {
+                        console.log('one-time error')
                         console.log(err)
                     }
                 }
@@ -95,6 +96,7 @@ const main = async () => {
                     // }
                     console.log(user_id, 'Push everyday Message to dbo.Message Success!!!')
                 } catch (err) {
+                    console.log('everyday error')
                     console.log(err)
                 }
             } else if (schedule_rule === 'everyweek') {
@@ -120,6 +122,7 @@ const main = async () => {
                         console.log(user_id, 'Push everyweek Message to dbo.Message Success!!!')
                     }
                 } catch (err) {
+                    console.log('everyweek error')
                     console.log(err)
                 }
             } else if (schedule_rule === 'everymonth') {
@@ -145,6 +148,7 @@ const main = async () => {
                         console.log(user_id, 'Push everymonth Message to dbo.Message Success!!!')
                     }
                 } catch (err) {
+                    console.log('everymonth error')
                     console.log(err)
                 }
             } else if (schedule_rule === 'everyyear') {
@@ -171,6 +175,9 @@ const main = async () => {
                         console.log(user_id, 'Push everyyear Message to dbo.Message Success!!!')
                     }
                 } catch (err) {
+                    console.log(
+                        'everyyear error'
+                    )
                     console.log(err)
                 }
             }
